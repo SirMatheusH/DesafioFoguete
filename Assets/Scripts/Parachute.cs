@@ -1,15 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class Parachute : MonoBehaviour
 {
 
     private MeshRenderer _meshRenderer;
     private MeshCollider _meshCollider;
-    private Rigidbody _rigidbody;
-    public GameObject rocket;
-    private RocketController _rocketController;
+    private Rigidbody _parachuteRigidbody;
+    public GameObject nose;
+    private NoseController _noseController;
     public bool openParachuteAutomatically = true;
 
     /**
@@ -22,17 +23,17 @@ public class Parachute : MonoBehaviour
     {
         _meshRenderer = gameObject.GetComponent<MeshRenderer>();
         _meshCollider = gameObject.GetComponent<MeshCollider>();
-        _rigidbody = gameObject.GetComponent<Rigidbody>();
-        _rocketController = rocket.GetComponent<RocketController>();
+        _parachuteRigidbody = gameObject.GetComponent<Rigidbody>();
+        _noseController = nose.GetComponent<NoseController>();
         _meshRenderer.enabled = false; // Caso ambos não estajam desativados no editor antes de entrar no GameMode.
         _meshCollider.enabled = false;
-        _rigidbody.mass = 0; 
+        _parachuteRigidbody.mass = 0; 
     }
 
     void Update()
     {
         // Checa se o foguete está separado e se está perto do chão, caso sim, abre o paraquedas
-        if (openParachuteAutomatically && !_rocketController.isJoined && _rigidbody.transform.position.y < 100)
+        if (openParachuteAutomatically && !_noseController.isJoined && _parachuteRigidbody.transform.position.y < 100)
         {
             OpenParachute();
         }
@@ -48,7 +49,7 @@ public class Parachute : MonoBehaviour
         isParachuteOpen = true;
         _meshRenderer.enabled = true;
         _meshCollider.enabled = true;
-        _rigidbody.mass = 1;
-        _rigidbody.drag = 5;
+        _parachuteRigidbody.mass = 1;
+        _parachuteRigidbody.drag = 5;
     }
 }
