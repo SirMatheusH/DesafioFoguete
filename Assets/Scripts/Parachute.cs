@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using NoseStage;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -9,9 +10,10 @@ public class Parachute : MonoBehaviour
     private MeshRenderer _meshRenderer;
     private MeshCollider _meshCollider;
     private Rigidbody _parachuteRigidbody;
-    public GameObject nose;
+    public GameObject noseGameObject;
     private NoseController _noseController;
     public bool openParachuteAutomatically = true;
+    public float openParachuteAt = 100;
 
     /**
      * Usada pra não chamar OpenParachute multiplas vezes
@@ -24,16 +26,13 @@ public class Parachute : MonoBehaviour
         _meshRenderer = gameObject.GetComponent<MeshRenderer>();
         _meshCollider = gameObject.GetComponent<MeshCollider>();
         _parachuteRigidbody = gameObject.GetComponent<Rigidbody>();
-        _noseController = nose.GetComponent<NoseController>();
-        _meshRenderer.enabled = false; // Caso ambos não estajam desativados no editor antes de entrar no GameMode.
-        _meshCollider.enabled = false;
-        _parachuteRigidbody.mass = 0; 
+        _noseController = noseGameObject.GetComponent<NoseController>();
     }
 
     void Update()
     {
-        // Checa se o foguete está separado e se está perto do chão, caso sim, abre o paraquedas
-        if (openParachuteAutomatically && !_noseController.isJoined && _parachuteRigidbody.transform.position.y < 100)
+        // Checa se o foguete está separado, desconectado e se está perto do chão, caso sim, abre o paraquedas
+        if (openParachuteAutomatically && !_noseController.isJoined && _parachuteRigidbody.transform.position.y < openParachuteAt)
         {
             OpenParachute();
         }

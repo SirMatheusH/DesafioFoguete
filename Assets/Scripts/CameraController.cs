@@ -1,12 +1,28 @@
 using UnityEngine;
 
+/**
+ * Pra câmera decidi fazer um script genérico
+ */
 public class Camera : MonoBehaviour
 {
-    public Transform objectToFollow;
-    public bool controlsEnabled;
-    public Vector3 initialOffset = Vector3.zero;
     
+    public Transform objectToFollow;
+    
+    /**
+     * Permite ou não o controle da câmera
+     */
+    public bool controlsEnabled;
+    
+    /**
+     * Offset inicial da camera com relação ao foguete.
+     */
+    public Vector3 initialOffset = Vector3.zero;
     private Vector3 _offset;
+    
+    /**
+     * Distancia máxima entre a camera e o objeto sendo seguido.
+     */
+    public float zoomOutLimit = 15;
 
     private void Start()
     {
@@ -16,12 +32,13 @@ public class Camera : MonoBehaviour
     void Update()
     {
         transform.position = objectToFollow.transform.position + _offset; // Faz a camera seguir o objeto especificado continuamente
-
-        if (controlsEnabled && Input.GetKey(KeyCode.UpArrow) && _offset.z < -2) // Permite o zoom in ou out da câmera.
+        // Permite o zoom in ou out da câmera.
+        
+        if (controlsEnabled && Input.GetKey(KeyCode.UpArrow) && _offset.z < -2)
         {
             _offset += new Vector3(0, 0, -5) * -0.005f;
         }
-        if (controlsEnabled && Input.GetKey(KeyCode.DownArrow) && _offset.z > -10)
+        if (controlsEnabled && Input.GetKey(KeyCode.DownArrow) && _offset.z > (zoomOutLimit * -1)) // multiplicado por -1 devido a posição da camera com relacao ao objeto
         {
             _offset += new Vector3(0, 0, -5) * 0.005f;
         }
