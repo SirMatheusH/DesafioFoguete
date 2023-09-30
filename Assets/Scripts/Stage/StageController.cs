@@ -7,8 +7,12 @@ namespace Stage
     public class StageController : MonoBehaviour
     {
         public GameObject noseGameObject;
-        private NoseController _noseController;
+
         private Rigidbody _stageRigidBody;
+
+        private AudioController _audioController;
+        
+        private NoseController _noseController;
         public StageParticleController stageParticleController;
 
         /**
@@ -28,8 +32,9 @@ namespace Stage
 
         private void Start()
         {
-            _noseController = noseGameObject.GetComponent<NoseController>();
             _stageRigidBody = gameObject.GetComponent<Rigidbody>();
+            _audioController = gameObject.GetComponent<AudioController>();
+            _noseController = noseGameObject.GetComponent<NoseController>();
         }
 
         private void Update() => CheckFuelLevels();
@@ -58,9 +63,11 @@ namespace Stage
             if (canAccelerate && Input.GetKeyDown(KeyCode.LeftShift))
             {
                 stageParticleController.StartEmitting();
+                _audioController.PlayRocketBoosterSfx();
             } else if (Input.GetKeyUp(KeyCode.LeftShift))
             {
                 stageParticleController.StopEmitting();
+                _audioController.PauseRocketBoosterSfx();
             }
             
 

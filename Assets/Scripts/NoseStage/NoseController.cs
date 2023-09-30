@@ -19,12 +19,14 @@ namespace NoseStage
         private StageSeparationParticles _stageSeparationParticlesScript;
         private StageController _stageController;
         private StageParticleController _stageParticleController;
+        private AudioController _stageAudioController;
         
         // Other variables
         /**
-          * A junta que conecta o nariz ao primeiro estágio
-          */
+         * A junta que conecta o nariz ao primeiro estágio
+         */
         private FixedJoint _joint;
+        
         
         private float _maxHeightReached;
 
@@ -34,10 +36,13 @@ namespace NoseStage
         private void Start()
         {
             _stageRigidBody = stageGameObject.GetComponent<Rigidbody>();
+            
             _parachuteScript = parachuteGameObject.GetComponent<Parachute>();
             _stageSeparationParticlesScript = stageSeparation.GetComponent<StageSeparationParticles>();
             _stageController = stageGameObject.GetComponent<StageController>();
             _stageParticleController = stageGameObject.transform.GetChild(0).gameObject.GetComponent<StageParticleController>();
+            _stageAudioController = stageGameObject.GetComponent<AudioController>();
+            
             _joint = gameObject.GetComponent<FixedJoint>();
         }
 
@@ -73,6 +78,9 @@ namespace NoseStage
             _stageSeparationParticlesScript.EmitParticles();
             // não queria chamar essa função aqui devido o fato do Nariz do foguete não ter nada aver com as particulas do estágio, mas okay
             _stageParticleController.DeleteParticleSystem(); 
+            
+            // Devido ao Nariz ter a função responsável por separar os compartimentos, faz sentido parar o som dos boosters do estágio aqui
+            _stageAudioController.PauseRocketBoosterSfx();
         }
         
         /**
