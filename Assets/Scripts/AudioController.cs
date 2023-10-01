@@ -3,7 +3,7 @@ using UnityEngine;
 /**
  * Controlador de efeito sonoro genérico, ao anexar esse script e um AudioSource à um GameObject, esse controller pode começar e parar qualquer efeito sonoro.
  *
- * Utilizado no estagio e na parte superior do foguete (nesse caso, preparando pra quando eu implementar um propulsor no nivel difícil do desafio).
+ * Utilizado no estagio e na parte superior do foguete.
  */
 public class AudioController : MonoBehaviour
 {
@@ -25,7 +25,8 @@ public class AudioController : MonoBehaviour
 
     public void PauseRocketBoosterSfx()
     {
-        _audioSource.Pause();
+        _audioSource.Pause(); // Pause ao invés de Stop pra não fazer o audio clip recomeçar (não é SUPER necessário nesse caso devido ao fato dos clipes utilizados ter um som uniforme durante toda
+        // a duração mas também não custa nada) 
         isPlaying = false;
     }
 }

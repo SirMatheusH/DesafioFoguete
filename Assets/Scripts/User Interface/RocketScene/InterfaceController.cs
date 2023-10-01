@@ -10,7 +10,7 @@ namespace User_Interface.RocketScene
 {
     public class InterfaceController : MonoBehaviour
     {
-
+        // Elementos de interface
         public TextMeshProUGUI speedometer;
         public TextMeshProUGUI maxHeight;
         public TextMeshProUGUI currentHeight;
@@ -18,10 +18,9 @@ namespace User_Interface.RocketScene
 
         // Objetos e scripts necessários pra mostrar informações na interface 
         public GameObject noseGameObject;
+        public GameObject stageGameObject;
         private NoseController _noseController;
         private Rigidbody _noseRigidbody;
-        
-        public GameObject stageGameObject;
         private StageController _stageController;
 
         private void Start()
@@ -30,27 +29,24 @@ namespace User_Interface.RocketScene
             _noseRigidbody = noseGameObject.GetComponent<Rigidbody>();
             _stageController = stageGameObject.GetComponent<StageController>();
         }
-
-
+        
         void Update()
         {
             CheckInputs();
             UpdateUi();
         }
 
+        /**
+         * Atualiza os elementos de interface
+         */
         private void UpdateUi()
         {
             speedometer.text = ((int)_noseRigidbody.velocity.magnitude) + "m/s";
             maxHeight.text = "Altura máxima: " +  (int)_noseController.maxHeightReached + "m";
             currentHeight.text = "Altura atual: " + (int)_noseRigidbody.transform.position.y + "m";
-
-            if (_noseController.isJoined)
-            {
-                var percentage = PercentageBetweenTwoValues(_stageController.currentFuel, _stageController.initialFuel);
-                fuelText.text = "Combustível: " + percentage + "%";
-                print("perc " + percentage);
-            }
-                
+            
+            // Mostra o nível de combustível do estágio, e quando eles se separam, mostra o nível de combustível do 'nariz'
+            if (_noseController.isJoined)fuelText.text = "Combustível: " + PercentageBetweenTwoValues(_stageController.currentFuel, _stageController.initialFuel) + "%";
             else fuelText.text = "Combustível: " + PercentageBetweenTwoValues(_noseController.currentFuel, _noseController.initialFuel) + "%";
         }
 

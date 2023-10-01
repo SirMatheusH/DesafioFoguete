@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 namespace NoseStage
@@ -12,7 +11,7 @@ namespace NoseStage
          * Timer nulável pra não precisar usar uma variavel booleana extra
          */
         private float? _timerBeforeDeletion = null;
-
+        
         private void Start()
         {
             _particleSystem = gameObject.GetComponent<ParticleSystem>();
@@ -22,15 +21,12 @@ namespace NoseStage
 
         private void Update()
         {
-            // ReSharper disable once ConvertIfStatementToSwitchStatement // Prefiro if else ao invés de switch case nessa instância
+            // Checa se o timer não é mais nulo, se não for, um timer começa, e no final o GameObject é deletado
             if (_timerBeforeDeletion is > 0) // Só é verdadeiro quando _timerBeforeDeletion não for mais nulo
             {
                 _timerBeforeDeletion -= Time.deltaTime;
             }
-            else if (_timerBeforeDeletion <= 0)
-            {
-                Destroy(gameObject);
-            }
+            else if (_timerBeforeDeletion <= 0) Destroy(gameObject);
         }
 
         /**

@@ -7,6 +7,7 @@ using Random = System.Random;
 public class GameController : MonoBehaviour
 {
 
+    public Light directionalLight;
     public GameObject parachuteGameObject;
     public Rigidbody noseRigidBody;
     public Rigidbody stageRigidBody;
@@ -14,12 +15,10 @@ public class GameController : MonoBehaviour
     private MeshCollider _parachuteMc;
     private MeshRenderer _parachuteMr;
     
-    
     public Vector3 windDirection = Vector3.zero;
     
     private void Start()
     {
-        
         _parachuteRb = parachuteGameObject.GetComponent<Rigidbody>();
         _parachuteMc = parachuteGameObject.GetComponent<MeshCollider>();
         _parachuteMr = parachuteGameObject.GetComponent<MeshRenderer>();
@@ -36,17 +35,23 @@ public class GameController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (noseRigidBody.transform.position.y < 1000)
-        {
-            noseRigidBody.AddForce(windDirection);
-        }
-
-        if (stageRigidBody.transform.position.y < 1000)
-        {
-            stageRigidBody.AddForce(windDirection);
-        }
+        // Só aplica a força do vento quando as devidas partes estiverem a baixo de 1000m (pra simular que saíram da atmosfera)
+        if (noseRigidBody.transform.position.y < 1000) noseRigidBody.AddForce(windDirection);
+        if (stageRigidBody.transform.position.y < 1000) stageRigidBody.AddForce(windDirection);
+        
     }
 
+    /**
+     * Liga ou desliga a luz direcional da cena (opção adicionada porque gostei muito da estética do foguete ser lançado a noite, mas também gosto de oferecer controle ao usuário)
+     */
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.L)) directionalLight.enabled = !directionalLight.enabled;
+    }
+
+    /**
+     * Gera uma direção de vento aleatória nos eixos x e z
+     */
     private void RandomWindDirection()
     {
         var random = new Random();

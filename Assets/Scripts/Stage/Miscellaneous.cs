@@ -11,7 +11,7 @@ namespace Stage
         {
             receiver.AddForce(gameObject.transform.forward * force, ForceMode.Force); // transform.forward e não transform.up devido à orientação do nariz do foguete.
         }
-
+        
         public static void AddRotationalTorque(this Rigidbody receiver, Direction direction)
         {
             switch (direction)
@@ -33,6 +33,9 @@ namespace Stage
             }
         }
 
+        /**
+         * Calcula a porcentagem que um número é de outro.
+         */
         public static int PercentageBetweenTwoValues(float value, float maxValue)
         {
             return (int)((value / maxValue) * 100);

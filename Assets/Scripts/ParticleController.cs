@@ -31,10 +31,8 @@ public class ParticleController : MonoBehaviour
         if (_deletionTimer is > 0) // Mesmo caso do StageSeparationParticles, só é verdadeiro quando o timer não for mais nulo
         {
             _deletionTimer -= Time.deltaTime;
-        } else if (_deletionTimer <= 0) 
-        {
-            Destroy(gameObject);
-        }
+        } else if (_deletionTimer <= 0) Destroy(gameObject);
+        
     }
 
     public void StartEmitting()

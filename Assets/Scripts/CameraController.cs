@@ -5,7 +5,9 @@ using UnityEngine;
  */
 public class Camera : MonoBehaviour
 {
-    
+    /**
+     * Objeto cujo qual a câmera irá seguir
+     */
     public Transform objectToFollow;
     
     /**
@@ -33,12 +35,14 @@ public class Camera : MonoBehaviour
     {
         transform.position = objectToFollow.transform.position + _offset; // Faz a camera seguir o objeto especificado continuamente
         // Permite o zoom in ou out da câmera.
+
+        if (!controlsEnabled) return;
         
-        if (controlsEnabled && Input.GetKey(KeyCode.UpArrow) && _offset.z < -2)
+        if (Input.GetKey(KeyCode.UpArrow) && _offset.z < -2)
         {
             _offset += new Vector3(0, 0, -5) * -0.005f;
         }
-        if (controlsEnabled && Input.GetKey(KeyCode.DownArrow) && _offset.z > (zoomOutLimit * -1)) // multiplicado por -1 devido a posição da camera com relacao ao objeto
+        if (Input.GetKey(KeyCode.DownArrow) && _offset.z > (-zoomOutLimit)) // negativado devido a posição da camera com relacao ao objeto
         {
             _offset += new Vector3(0, 0, -5) * 0.005f;
         }

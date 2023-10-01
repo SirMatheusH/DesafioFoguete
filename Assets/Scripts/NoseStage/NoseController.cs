@@ -1,7 +1,5 @@
-using System.Diagnostics.CodeAnalysis;
 using Stage;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace NoseStage
 {
@@ -22,25 +20,25 @@ namespace NoseStage
         private StageController _stageController;
         private ParticleController _stageParticleController;
         private ParticleController _particleController;
-
+        
         private AudioController _stageAudioController;
         private AudioController _noseAudioController;
 
-        // Other variables
         /**
          * A junta que conecta o nariz ao primeiro estágio
          */
         private FixedJoint _joint;
 
+        /**
+         * Altura máxima que o foguete alcançou
+         */
         public float maxHeightReached;
 
-        [HideInInspector] // Exposto para os outros scripts. 
         public bool isJoined = true;
 
         /**
          * Quantidade de combustível com o qual o foguete começa.
          */
-        [FormerlySerializedAs("initialFuelAmount")]
         public float initialFuel = 12;
 
         /**
@@ -79,15 +77,11 @@ namespace NoseStage
         private void Update()
         {
             CheckHeight();
-        }
-
-        private void FixedUpdate()
-        {
-            CheckInputs(); // Check inputs interage com a física, so FixedUpdate it is.
             CheckFuelLevels();
         }
 
-        [SuppressMessage("ReSharper", "ConvertIfStatementToSwitchStatement")] // Suprimindo esse aviso também porque um if else fica mais legivel do que um switch case nesse *case*
+        private void FixedUpdate() => CheckInputs(); // CheckInputs interage com a física, so FixedUpdate it is.
+
         private void CheckInputs()
         {
             if (isJoined && Input.GetKey(KeyCode.Space)) // Quando as partes estiverem conectadas, apertar o espaço quebra a junta, separando as partes
@@ -111,10 +105,7 @@ namespace NoseStage
                 _noseRigidBody.AddUpwardsForce(gameObject, force);
                 currentFuel -= Time.fixedDeltaTime;
 
-                if (force < maxForce)
-                {
-                    force += 0.1f;
-                }
+                if (force < maxForce) force += 0.1f; // Limite na quantidade de força sendo usada pra levantar o foguete
 
                 // Pra remover a duplicidade de checar duas vezes se Shift está sendo pressionado, isso também arruma um bug no qual ambos efeitos não eram ativados quando o estágio se separava
                 // automaticamente.
@@ -144,6 +135,7 @@ namespace NoseStage
             _stageRigidBody.drag = 0.1f; // adiciona uma força de arrasto no estágio, por ser menos aerodinamico depois que separado do nariz pontura do foguete
             _stageController.enabled = false; // desativação do stageController pra não precisar se preocupar com colizões ao reutilizar os mesmos controles
             _stageSeparationParticlesScript.EmitParticles(); // Mostra as partículas de separação dos estágios
+            
             // não queria chamar essa função aqui devido o fato do Nariz do foguete não ter nada aver com as particulas do estágio, mas okay
             _stageParticleController.DeleteParticleSystem();
 
@@ -156,14 +148,11 @@ namespace NoseStage
          */
         private void CheckHeight()
         {
-            if (_stageRigidBody.transform.position.y > maxHeightReached)
-            {
-                maxHeightReached = _noseRigidBody.transform.position.y;
-            }
+            if (_noseRigidBody.transform.position.y > maxHeightReached) maxHeightReached = _noseRigidBody.transform.position.y;
         }
 
         /**
-         *
+         * Usado para parar de emitir as partículas e de tocar o som do foguete quando o combustível acabar
          */
         private void CheckFuelLevels()
         {

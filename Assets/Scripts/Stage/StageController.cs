@@ -1,27 +1,26 @@
 using NoseStage;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Stage
 {
     public class StageController : MonoBehaviour
     {
+        // Objetos e scripts
         public GameObject noseGameObject;
-
         private Rigidbody _stageRigidBody;
-
         private AudioController _audioController;
-        
         private NoseController _noseController;
-        
         public ParticleController particleController;
 
-        [FormerlySerializedAs("initialFuelAmount")] public float initialFuel = 25f;
-        
+        /**
+         * Nível de combustível com o qual o estágio começa.
+         */
+        public float initialFuel = 25f;
+
         /**
          * Nível de combustível atual.
          */
-        [FormerlySerializedAs("currentFuelAmount")] public float currentFuel;
+        public float currentFuel;
 
         /**
          * Pra criar um efeito mais "realista", o foguete começa acelerando devagar, até atingir um limite.
@@ -38,7 +37,6 @@ namespace Stage
             _stageRigidBody = gameObject.GetComponent<Rigidbody>();
             _audioController = gameObject.GetComponent<AudioController>();
             _noseController = noseGameObject.GetComponent<NoseController>();
-
             currentFuel = initialFuel;
         }
 
@@ -51,9 +49,11 @@ namespace Stage
          */
         private void CheckInputs()
         {
-            var canAccelerate = _noseController.isJoined && currentFuel > 0;
-            
-            if (canAccelerate && Input.GetKey(KeyCode.LeftShift))
+            var controlsEnabled = _noseController.isJoined && currentFuel > 0;
+
+            if (!controlsEnabled) return;
+
+            if (Input.GetKey(KeyCode.LeftShift))
             {
                 _stageRigidBody.AddUpwardsForce(gameObject, force); // Adiciona uma força no RigidBody
 
@@ -62,42 +62,36 @@ namespace Stage
                 currentFuel -= Time.fixedDeltaTime;
 
                 if (force < maxForce) force += (0.1f); // Limite na quantidade de força sendo usada pra levantar o foguete
-                
             }
 
-            if (canAccelerate && Input.GetKeyDown(KeyCode.LeftShift))
+            if (Input.GetKeyDown(KeyCode.LeftShift))
             {
                 particleController.StartEmitting();
                 _audioController.PlayRocketBoosterSfx();
-            } else if (Input.GetKeyUp(KeyCode.LeftShift))
+            }
+            else if (Input.GetKeyUp(KeyCode.LeftShift))
             {
                 particleController.StopEmitting();
                 _audioController.PauseRocketBoosterSfx();
             }
             
-
             // Permite a rotação do foguete no ar somente enquanto o estagio estiver conectado com o foguete
-            if (_noseController.isJoined)
-            {
-                if (Input.GetKey(KeyCode.W)) _stageRigidBody.AddRotationalTorque(Direction.Forwards);
-                if (Input.GetKey(KeyCode.A)) _stageRigidBody.AddRotationalTorque(Direction.Left);
-                if (Input.GetKey(KeyCode.S)) _stageRigidBody.AddRotationalTorque(Direction.Backwards);
-                if (Input.GetKey(KeyCode.D)) _stageRigidBody.AddRotationalTorque(Direction.Right);
-            }
+            if (Input.GetKey(KeyCode.W)) _stageRigidBody.AddRotationalTorque(Direction.Forwards);
+            if (Input.GetKey(KeyCode.A)) _stageRigidBody.AddRotationalTorque(Direction.Left);
+            if (Input.GetKey(KeyCode.S)) _stageRigidBody.AddRotationalTorque(Direction.Backwards);
+            if (Input.GetKey(KeyCode.D)) _stageRigidBody.AddRotationalTorque(Direction.Right);
         }
-        
-        private void CheckFuelLevels() // Checa o nivel de combustivel e desconecta automaticamente do resto do foguete quando o combustivel acaba.
+
+        /**
+         * Checa o nivel de combustivel e desconecta automaticamente do resto do foguete quando o combustivel acaba.
+         */
+        private void CheckFuelLevels()
         {
             if (currentFuel <= 0)
             {
                 _noseController.BreakOff();
                 particleController.StopEmitting(); // :)
             }
-        }
-
-        private void OnDisable()
-        {
-            particleController.StopEmitting(); // Pra se certificar mesmo que aquelas particulas não vão ficar saindo;
         }
     }
 }
