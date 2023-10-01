@@ -13,13 +13,17 @@ namespace NoseStage
 
         // Rigid bodies
         private Rigidbody _stageRigidBody;
+        private Rigidbody _noseRigidBody;
 
         // Scripts
         private Parachute _parachuteScript;
         private StageSeparationParticles _stageSeparationParticlesScript;
         private StageController _stageController;
-        private StageParticleController _stageParticleController;
+        private ParticleController _stageParticleController;
+        private ParticleController _particleController;
+        
         private AudioController _stageAudioController;
+        private AudioController _noseAudioController;
         
         // Other variables
         /**
@@ -27,21 +31,38 @@ namespace NoseStage
          */
         private FixedJoint _joint;
         
-        
-        private float _maxHeightReached;
+        public float maxHeightReached;
 
         [HideInInspector] // Exposto para os outros scripts. 
         public bool isJoined = true;
 
+        /**
+         * Combustível do estágio.
+         */
+        public float fuel = 10f;
+
+        /**
+         * Força da aceleração.
+         */
+        public float force = 20;
+
+        /**
+         * Aceleração máxima.
+         */
+        public float maxForce = 35;
+        
         private void Start()
         {
             _stageRigidBody = stageGameObject.GetComponent<Rigidbody>();
+            _noseRigidBody = gameObject.GetComponent<Rigidbody>();
             
             _parachuteScript = parachuteGameObject.GetComponent<Parachute>();
             _stageSeparationParticlesScript = stageSeparation.GetComponent<StageSeparationParticles>();
             _stageController = stageGameObject.GetComponent<StageController>();
-            _stageParticleController = stageGameObject.transform.GetChild(0).gameObject.GetComponent<StageParticleController>();
+            _stageParticleController = stageGameObject.transform.GetChild(0).gameObject.GetComponent<ParticleController>();
+            _particleController = gameObject.transform.GetChild(1).gameObject.GetComponent<ParticleController>();
             _stageAudioController = stageGameObject.GetComponent<AudioController>();
+            _noseAudioController = gameObject.GetComponent<AudioController>();
             
             _joint = gameObject.GetComponent<FixedJoint>();
         }
@@ -49,7 +70,11 @@ namespace NoseStage
         private void Update()
         {
             CheckHeight();
-            CheckInputs(); // Diferente do CheckInputs do StageController, esse aqui não interage com a física, então usar ele no Update() é suave.
+        }
+
+        private void FixedUpdate()
+        {
+            CheckInputs(); // Check inputs interage com a física, so FixedUpdate it is.
         }
 
         [SuppressMessage("ReSharper", "ConvertIfStatementToSwitchStatement")] // Suprimindo esse aviso também porque um if else fica mais legivel do que um switch case nesse *case*
@@ -63,7 +88,40 @@ namespace NoseStage
             if (!isJoined && !_parachuteScript.isParachuteOpen && Input.GetKey(KeyCode.LeftControl)) // Se o estagio estiver desconectado e o paraquedas não estiver aberto
             {
                 _parachuteScript.OpenParachute();
+                _particleController.DeleteParticleSystem();
+                _noseAudioController.PauseRocketBoosterSfx();
             }
+
+            var controlsEnabled = !isJoined && !_parachuteScript.isParachuteOpen && fuel > 0;
+            
+            if (!controlsEnabled) return; // pra não checar essa variável em todos os if-elses abaixo
+
+            if (Input.GetKey(KeyCode.LeftShift))
+            {
+                _noseRigidBody.AddUpwardsForce(gameObject, force);
+                fuel -= Time.fixedDeltaTime;
+                
+                if (force < maxForce)
+                {
+                    force += 0.1f;
+                }
+            }
+
+            if (Input.GetKeyDown(KeyCode.LeftShift))
+            {
+                _particleController.StartEmitting();
+                _noseAudioController.PlayRocketBoosterSfx();
+            }
+            if (Input.GetKeyUp(KeyCode.LeftShift))
+            {
+                _particleController.StopEmitting();
+                _noseAudioController.PauseRocketBoosterSfx();
+            }
+            
+            if (Input.GetKey(KeyCode.W)) _noseRigidBody.AddRotationalTorque(Direction.Forwards);
+            if (Input.GetKey(KeyCode.A)) _noseRigidBody.AddRotationalTorque(Direction.Left);
+            if (Input.GetKey(KeyCode.S)) _noseRigidBody.AddRotationalTorque(Direction.Backwards);
+            if (Input.GetKey(KeyCode.D)) _noseRigidBody.AddRotationalTorque(Direction.Right);
         }
 
         /**
@@ -88,9 +146,9 @@ namespace NoseStage
          */
         private void CheckHeight()
         {
-            if ( _stageRigidBody.transform.position.y > _maxHeightReached)
+            if ( _stageRigidBody.transform.position.y > maxHeightReached)
             {
-                _maxHeightReached = _stageRigidBody.transform.position.y;
+                maxHeightReached = _stageRigidBody.transform.position.y;
             }
         }
     }
