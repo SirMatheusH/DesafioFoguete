@@ -1,5 +1,6 @@
 using NoseStage;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Stage
 {
@@ -15,10 +16,12 @@ namespace Stage
         
         public ParticleController particleController;
 
+        [FormerlySerializedAs("initialFuelAmount")] public float initialFuel = 25f;
+        
         /**
-         * Maior do que os 5 especificados devido o fato do foguete demorar mais pra sair do chão.
+         * Nível de combustível atual.
          */
-        public float fuel = 25f;
+        [FormerlySerializedAs("currentFuelAmount")] public float currentFuel;
 
         /**
          * Pra criar um efeito mais "realista", o foguete começa acelerando devagar, até atingir um limite.
@@ -35,6 +38,8 @@ namespace Stage
             _stageRigidBody = gameObject.GetComponent<Rigidbody>();
             _audioController = gameObject.GetComponent<AudioController>();
             _noseController = noseGameObject.GetComponent<NoseController>();
+
+            currentFuel = initialFuel;
         }
 
         private void Update() => CheckFuelLevels();
@@ -46,7 +51,7 @@ namespace Stage
          */
         private void CheckInputs()
         {
-            var canAccelerate = _noseController.isJoined && fuel > 0;
+            var canAccelerate = _noseController.isJoined && currentFuel > 0;
             
             if (canAccelerate && Input.GetKey(KeyCode.LeftShift))
             {
@@ -54,7 +59,7 @@ namespace Stage
 
                 // Reduz o combustivel somente enquanto o shift estiver sendo segurado
                 // (razão no lore: esse foguete usa combustivel líquido? https://www.esa.int/Education/Solid_and_liquid_fuel_rockets)
-                fuel -= Time.fixedDeltaTime;
+                currentFuel -= Time.fixedDeltaTime;
 
                 if (force < maxForce) force += (0.1f); // Limite na quantidade de força sendo usada pra levantar o foguete
                 
@@ -83,7 +88,7 @@ namespace Stage
         
         private void CheckFuelLevels() // Checa o nivel de combustivel e desconecta automaticamente do resto do foguete quando o combustivel acaba.
         {
-            if (fuel <= 0)
+            if (currentFuel <= 0)
             {
                 _noseController.BreakOff();
                 particleController.StopEmitting(); // :)

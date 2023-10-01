@@ -5,7 +5,7 @@ namespace Stage
     /**
      * Funções criadas para simplificar, abstrair, e diminuir repetições de código.
      */
-    public static class Extensions
+    public static class Miscellaneous
     {
         public static void AddUpwardsForce(this Rigidbody receiver, GameObject gameObject, float force)
         {
@@ -32,6 +32,11 @@ namespace Stage
                     return;
             }
         }
+
+        public static int PercentageBetweenTwoValues(float value, float maxValue)
+        {
+            return (int)((value / maxValue) * 100);
+        }
     }
     
     /**
@@ -45,3 +50,4 @@ namespace Stage
         Backwards
     }
 }
+

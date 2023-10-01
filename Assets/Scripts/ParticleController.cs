@@ -10,6 +10,8 @@ public class ParticleController : MonoBehaviour
     private ParticleSystem _particleSystem;
     private ParticleSystem.EmissionModule _emission;
 
+    public bool isEmitting;
+    
     /**
       * Timer nulável pra não precisar usar uma variavel booleana extra
       */
@@ -20,6 +22,7 @@ public class ParticleController : MonoBehaviour
         _particleSystem = gameObject.GetComponent<ParticleSystem>();
         _emission = _particleSystem.emission;
         StopEmitting(); // Não funciona dentro do Initializer, suspeito que devido ao fato desse MonoBehavior não ter sido instanciado ainda naquele ponto da execução.
+        isEmitting = false;
     }
 
     private void Update()
@@ -37,17 +40,20 @@ public class ParticleController : MonoBehaviour
     public void StartEmitting()
     {
         _emission.enabled = true;
+        isEmitting = true;
     }
 
     public void StopEmitting()
     {
         _emission.enabled = false;
+        isEmitting = false;
     }
 
     public void DeleteParticleSystem()
     { 
         StopEmitting();
         // O timer é inicializado com o valor da lifetime das particulas, pra assegurar que elas tenham terminado de "existir" antes de deletar o objeto
-        _deletionTimer = _particleSystem.main.startLifetime.constant; 
+        _deletionTimer = _particleSystem.main.startLifetime.constant;
+        isEmitting = false;
     }
 }

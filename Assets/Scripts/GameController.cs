@@ -1,4 +1,3 @@
-using Unity.Collections;
 using UnityEngine;
 using Random = System.Random;
 
@@ -15,7 +14,7 @@ public class GameController : MonoBehaviour
     private MeshCollider _parachuteMc;
     private MeshRenderer _parachuteMr;
     
-    [ReadOnly]
+    
     public Vector3 windDirection = Vector3.zero;
     
     private void Start()

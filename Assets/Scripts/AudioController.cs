@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 /**
@@ -11,19 +9,23 @@ public class AudioController : MonoBehaviour
 {
     
     private AudioSource _audioSource;
+    public bool isPlaying;
     
     void Start()
     {
         _audioSource = gameObject.GetComponent<AudioSource>(); // O GameObject que esse script está anexado deve ter um componente AudioSource adicionado.
+        isPlaying = false;
     }
 
     public void PlayRocketBoosterSfx()
     {
         _audioSource.Play();
+        isPlaying = true;
     }
 
     public void PauseRocketBoosterSfx()
     {
         _audioSource.Pause();
+        isPlaying = false;
     }
 }
