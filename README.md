@@ -40,3 +40,5 @@ Espero que gostem do projeto, dos pequenos detalhes que adicionei, das minhas so
     R: Reinicia a cena do foguete
     R na tela de menu: Muda os vetores de rotação da câmera
     L: Liga e desliga a luz direcional da cena, amplificando o efeito de "planeta alienígena" (e também porque não tem um sol no skybox acima, então daonde está vindo essa luz?) 
+
+Link para download de uma build executável do projeto: https://drive.google.com/file/d/13ZHYvFIYHDh8SF8Ps0NTLOfveXbnDZSh
